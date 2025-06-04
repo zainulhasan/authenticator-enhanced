@@ -287,30 +287,16 @@ export function applyAppendMode(input: HTMLInputElement, code: string): void {
   fireInputEvents(input);
 }
 
-function pasteCode(code: string, mode: "replace" | "append" = "replace") {
-  if (mode === "append") {
-    const activeEl = document.activeElement;
-    if (activeEl && activeEl.tagName === "INPUT") {
-      applyAppendMode(activeEl as HTMLInputElement, code);
-    }
-    return;
-  }
+export function findPasteTarget(): HTMLInputElement | undefined {
+  const selector =
+    "input[type=text], input[type=number], input[type=tel], input[type=password]";
+  const isValidInput = (input: HTMLInputElement) =>
+    input.checkVisibility() &&
+    (!input.value || /^(\d{6}|\d{8}|[A-Z\d]{5})$/.test(input.value));
+  const inputs = Array.from<HTMLInputElement>(
+    document.querySelectorAll(selector)
+  );
 
-  const _inputBoxes = document.getElementsByTagName("input");
-  const inputBoxes: HTMLInputElement[] = [];
-  for (let i = 0; i < _inputBoxes.length; i++) {
-    if (
-      _inputBoxes[i].type === "text" ||
-      _inputBoxes[i].type === "number" ||
-      _inputBoxes[i].type === "tel" ||
-      _inputBoxes[i].type === "password"
-    ) {
-      inputBoxes.push(_inputBoxes[i]);
-    }
-  }
-  if (!inputBoxes.length) {
-    return;
-  }
   const identities = [
     "2fa",
     "otp",
@@ -320,45 +306,46 @@ function pasteCode(code: string, mode: "replace" | "append" = "replace") {
     "totp",
     "twoFactorCode",
   ];
-  for (const inputBox of inputBoxes) {
-    for (const identity of identities) {
-      if (
-        inputBox.name.toLowerCase().indexOf(identity) >= 0 ||
-        inputBox.id.toLowerCase().indexOf(identity) >= 0
-      ) {
-        if (!inputBox.value || /^(\d{6}|\d{8})$/.test(inputBox.value)) {
-          inputBox.value = code;
-          fireInputEvents(inputBox);
-        }
-        return;
-      }
+  for (const candidate of inputs) {
+    if (
+      isValidInput(candidate) &&
+      identities.some(
+        (identity) =>
+          candidate.name.toLowerCase().indexOf(identity) >= 0 ||
+          candidate.id.toLowerCase().indexOf(identity) >= 0
+      )
+    ) {
+      return candidate;
     }
   }
 
-  const activeInputBox =
-    document.activeElement && document.activeElement.tagName === "INPUT"
-      ? document.activeElement
-      : null;
-  if (activeInputBox) {
-    const inputBox = activeInputBox as HTMLInputElement;
-    if (!inputBox.value || /^(\d{6}|\d{8})$/.test(inputBox.value)) {
-      inputBox.value = code;
-      fireInputEvents(inputBox);
+  if (
+    document.activeElement &&
+    document.activeElement.matches(selector) &&
+    isValidInput(document.activeElement as HTMLInputElement)
+  ) {
+    return document.activeElement as HTMLInputElement;
+  }
+
+  return inputs.find(
+    (candidate) => candidate.type !== "password" && isValidInput(candidate)
+  );
+}
+
+function pasteCode(code: string, mode: "replace" | "append" = "replace") {
+  if (mode === "append") {
+    const activeEl = document.activeElement;
+    if (activeEl && activeEl.tagName === "INPUT") {
+      applyAppendMode(activeEl as HTMLInputElement, code);
     }
     return;
   }
 
-  for (const inputBox of inputBoxes) {
-    if (
-      (!inputBox.value || /^(\d{6}|\d{8})$/.test(inputBox.value)) &&
-      inputBox.type !== "password"
-    ) {
-      inputBox.value = code;
-      fireInputEvents(inputBox);
-      return;
-    }
+  const input = findPasteTarget();
+  if (input) {
+    input.value = code;
+    fireInputEvents(input);
   }
-  return;
 }
 
 export function fireInputEvents(inputBox: HTMLInputElement) {
