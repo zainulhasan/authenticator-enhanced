@@ -243,6 +243,7 @@ export default Vue.extend({
                 chrome.tabs.sendMessage(tab.id, {
                   action: "pastecode",
                   code: entry.code,
+                  mode: this.$store.state.menu.autofillMode,
                 });
               }
             }
