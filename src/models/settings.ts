@@ -30,6 +30,7 @@ interface UserSettingsData {
   enableContextMenu?: boolean;
   encodedPhrase?: string;
   smartFilter?: boolean;
+  showFavicon?: boolean;
   theme?: string;
   zoom?: number;
 }
@@ -185,7 +186,8 @@ type BooleanOption =
   | "oneDriveBusiness"
   | "oneDriveEncrypted"
   | "oneDriveRevoked"
-  | "smartFilter";
+  | "smartFilter"
+  | "showFavicon";
 
 type NumberOption = "autolock" | "lastRemindingBackupTime" | "offset" | "zoom";
 
@@ -203,6 +205,7 @@ function isBooleanOption(key: string): key is BooleanOption {
     "oneDriveEncrypted",
     "oneDriveRevoked",
     "smartFilter",
+    "showFavicon",
   ].includes(key);
 }
 

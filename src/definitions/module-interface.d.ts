@@ -37,6 +37,7 @@ interface MenuState {
   autofillMode: "replace" | "append";
   smartFilter: boolean;
   enableContextMenu: boolean;
+  showFavicon: boolean;
   theme: string;
   backupDisabled: boolean;
   storageArea: "sync" | "local";

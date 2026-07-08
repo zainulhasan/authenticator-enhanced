@@ -15,6 +15,7 @@ export class Menu implements Module {
           UserSettings.items.autofillMode === "append" ? "append" : "replace",
         smartFilter: UserSettings.items.smartFilter === true,
         enableContextMenu: UserSettings.items.enableContextMenu === true,
+        showFavicon: UserSettings.items.showFavicon === true,
         theme: UserSettings.items.theme || (isSafari ? "flat" : "normal"),
         autolock: Number(UserSettings.items.autolock) || 30,
         backupDisabled: await ManagedStorage.get("disableBackup", false),
@@ -56,6 +57,11 @@ export class Menu implements Module {
         setEnableContextMenu(state: MenuState, enableContextMenu: boolean) {
           state.enableContextMenu = enableContextMenu;
           UserSettings.items.enableContextMenu = enableContextMenu;
+          UserSettings.commitItems();
+        },
+        setShowFavicon(state: MenuState, showFavicon: boolean) {
+          state.showFavicon = showFavicon;
+          UserSettings.items.showFavicon = showFavicon;
           UserSettings.commitItems();
         },
         setTheme(state: MenuState, theme: string) {
