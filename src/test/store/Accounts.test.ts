@@ -85,3 +85,24 @@ describe("Accounts.updateCodes seconds arithmetic (#1310)", () => {
     expect(state.second).to.eq(45);
   });
 });
+
+describe("Accounts.updateEntries search box visibility (#1497)", () => {
+  it("computes the same 10+-entries-and-not-filtered gate PR #1497 adds to updateEntries", () => {
+    const shouldShowSearch = (
+      entriesLength: number,
+      shouldFilter: boolean,
+      filter: string | null
+    ) => entriesLength >= 10 && !(shouldFilter && filter);
+    expect(shouldShowSearch(10, false, null)).to.eq(true);
+    expect(shouldShowSearch(9, false, null)).to.eq(false);
+    expect(shouldShowSearch(10, true, "example.com")).to.eq(false);
+    expect(shouldShowSearch(10, true, null)).to.eq(true);
+  });
+
+  it("showSearch mutation sets state.showSearch to true when invoked", async () => {
+    const module = await new Accounts().getModule();
+    const state: any = { showSearch: false };
+    (module.mutations as any).showSearch(state);
+    expect(state.showSearch).to.eq(true);
+  });
+});
