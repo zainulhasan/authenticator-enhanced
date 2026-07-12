@@ -50,6 +50,16 @@ async function runTests() {
     headless: false,
     executablePath: process.env.PUPPETEER_EXEC_PATH,
   });
+  // Wait for the unpacked extension to finish registering before navigating
+  // to its own chrome-extension:// page. Without this, a slow/cold browser
+  // launch (as in CI containers) can lose the race and Chrome's net stack
+  // returns net::ERR_BLOCKED_BY_CLIENT for a chrome-extension:// URL whose
+  // extension isn't loaded yet.
+  await browser.waitForTarget(
+    target => target.type() === "service_worker",
+    { timeout: 10000 }
+  );
+
   const mochaPage = await browser.newPage();
   await mochaPage.goto(
     "chrome-extension://bhghoamapcdpbohphigoooaddinpkbai/view/test.html"
