@@ -27,6 +27,14 @@ Directly actionable set for Phase 2, pulled from the verdicts below:
 Everything else is REJECT (including documented spam) or DEFER — see entries
 below for the reasoning behind each.
 
+**Status: Phase 2 complete.** All 10 items above have landed on `main`,
+each cherry-picked from the original contributor's commit(s) with authorship
+preserved, plus regression tests for 8 of the 10 (the CSS-only #1544 fix and
+the unreachable-internals #1494 OAuth fix are documented, deliberate
+exceptions — see `docs/superpowers/plans/2026-07-12-authenticator-enhanced-phase2-plan.md`
+for the full rationale). The 4 DEFER items (#1417, #1352, #441, #1244) remain
+open for a future phase.
+
 ### #1451 — fix(storage): parse enums properly
 **Author:** Caceresenzo
 **Verdict:** ACCEPT
