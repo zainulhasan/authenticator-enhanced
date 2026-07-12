@@ -89,20 +89,28 @@ function showGrayLayout() {
     const captureBox = document.createElement("div");
     captureBox.id = "__ga_captureBox__";
     grayLayout.appendChild(captureBox);
-    grayLayout.onmousedown = grayLayoutDown;
-    grayLayout.onmousemove = grayLayoutMove;
+    grayLayout.onmousedown = (event) => {
+      event.stopPropagation();
+      grayLayoutDown(event);
+    };
+    grayLayout.onmousemove = (event) => {
+      event.stopPropagation();
+      grayLayoutMove(event);
+    };
     grayLayout.onmouseup = (event) => {
+      event.stopPropagation();
       grayLayoutUp(event);
     };
     grayLayout.oncontextmenu = (event) => {
       event.preventDefault();
+      event.stopPropagation();
       return;
     };
   }
   grayLayout.style.display = "block";
 }
 
-function grayLayoutDown(event: MouseEvent) {
+export function grayLayoutDown(event: MouseEvent) {
   if (event.button === 1 || event.button === 2) {
     event.preventDefault();
     return;
@@ -127,7 +135,7 @@ function grayLayoutDown(event: MouseEvent) {
   return;
 }
 
-function grayLayoutMove(event: MouseEvent) {
+export function grayLayoutMove(event: MouseEvent) {
   if (event.button === 1 || event.button === 2) {
     event.preventDefault();
     return;
@@ -160,7 +168,7 @@ function grayLayoutMove(event: MouseEvent) {
   return;
 }
 
-function grayLayoutUp(event: MouseEvent) {
+export function grayLayoutUp(event: MouseEvent) {
   const grayLayout = document.getElementById("__ga_grayLayout__");
   const captureBox = document.getElementById("__ga_captureBox__");
   if (!captureBox || !grayLayout) {
@@ -196,18 +204,15 @@ function grayLayoutUp(event: MouseEvent) {
       Number(sessionStorage.getItem("captureBoxPositionTop")) - event.clientY
     ) - 1;
 
-  // make sure captureBox and grayLayout is hidden
-  setTimeout(() => {
-    chrome.runtime.sendMessage({
-      action: "getCapture",
-      info: {
-        captureBoxLeft,
-        captureBoxTop,
-        captureBoxWidth,
-        captureBoxHeight,
-      },
-    });
-  }, 200);
+  chrome.runtime.sendMessage({
+    action: "getCapture",
+    info: {
+      captureBoxLeft,
+      captureBoxTop,
+      captureBoxWidth,
+      captureBoxHeight,
+    },
+  });
   return false;
 }
 
