@@ -69,7 +69,7 @@ function wordArrayToByteArray(wordArray: CryptoJS.lib.WordArray) {
 }
 
 function byteArray2String(bytes: number[]) {
-  return String.fromCharCode.apply(null, bytes);
+  return new TextDecoder("utf-8").decode(new Uint8Array(bytes));
 }
 
 function subBytesArray(bytes: number[], start: number, length: number) {
@@ -114,7 +114,11 @@ export function getOTPAuthPerLineFromOPTAuthMigration(migrationUri: string) {
     const type = ["totp", "hotp", "totp"][
       byteData[isserStart + isserLength + 5]
     ];
-    let line = `otpauth://${type}/${account}?secret=${secret}&issuer=${issuer}&algorithm=${algorithm}&digits=${digits}`;
+    let line = `otpauth://${type}/${encodeURIComponent(
+      account
+    )}?secret=${secret}&issuer=${encodeURIComponent(
+      issuer
+    )}&algorithm=${algorithm}&digits=${digits}`;
     if (type === "hotp") {
       let counter = 1;
       if (isserStart + isserLength + 7 <= lineLength) {
