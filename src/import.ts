@@ -295,7 +295,7 @@ export async function getEntryDataFromOTPAuthPerLine(importCode: string) {
         if (type !== "hex" && type !== "hhex" && secret.length % 8) {
           secret += "=".repeat(8 - (secret.length % 8));
         }
-        
+
         exportData[hash] = {
           account,
           hash,

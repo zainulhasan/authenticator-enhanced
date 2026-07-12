@@ -130,15 +130,12 @@ export default Vue.extend({
         return this.$store.state.menu.showFavicon;
       },
       set(showFavicon: boolean) {
-        chrome.permissions.request(
-          { permissions: ["favicon"] },
-          (granted) => {
-            this.$store.commit(
-              "menu/setShowFavicon",
-              granted ? showFavicon : false
-            );
-          }
-        );
+        chrome.permissions.request({ permissions: ["favicon"] }, (granted) => {
+          this.$store.commit(
+            "menu/setShowFavicon",
+            granted ? showFavicon : false
+          );
+        });
       },
     },
     theme: {

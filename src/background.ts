@@ -382,7 +382,8 @@ function getBackupToken(service: string) {
                       Accept: "application/json",
                       "Content-Type": "application/x-www-form-urlencoded",
                     },
-                    body: "client_id=" +
+                    body:
+                      "client_id=" +
                       getCredentials().onedrive.client_id +
                       "&client_secret=" +
                       getCredentials().onedrive.client_secret +

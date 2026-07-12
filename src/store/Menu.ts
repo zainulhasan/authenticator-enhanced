@@ -41,10 +41,7 @@ export class Menu implements Module {
           UserSettings.items.autofill = useAutofill;
           UserSettings.commitItems();
         },
-        setAutofillMode(
-          state: MenuState,
-          autofillMode: "replace" | "append"
-        ) {
+        setAutofillMode(state: MenuState, autofillMode: "replace" | "append") {
           state.autofillMode = autofillMode;
           UserSettings.items.autofillMode = autofillMode;
           UserSettings.commitItems();
