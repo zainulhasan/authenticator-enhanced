@@ -17,6 +17,16 @@ no PRs opened or closed since the plan was written.
 **Summary: 8 ACCEPT, 2 ACCEPT WITH CHANGES, 13 REJECT, 4 DEFER, out of 27
 total open PRs reviewed.**
 
+## Phase 2 action list
+
+Directly actionable set for Phase 2, pulled from the verdicts below:
+
+- **Implement as-is:** #1451, #1544, #1519, #1518, #1497, #1494, #1310, #1554
+- **Implement with changes** (see each entry for what to change): #1547, #1423
+
+Everything else is REJECT (including documented spam) or DEFER — see entries
+below for the reasoning behind each.
+
 ### #1451 — fix(storage): parse enums properly
 **Author:** Caceresenzo
 **Verdict:** ACCEPT
