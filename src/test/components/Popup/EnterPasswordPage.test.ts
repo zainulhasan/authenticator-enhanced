@@ -3,7 +3,7 @@ import * as chai from "chai";
 import * as sinon from "sinon";
 import * as sinonChai from "sinon-chai";
 
-import { mount, createLocalVue } from "@vue/test-utils";
+import { mount, createLocalVue, Wrapper } from "@vue/test-utils";
 import Vuex, { Store } from "vuex";
 import CommonComponents from "../../../components/common/index";
 
@@ -38,6 +38,7 @@ describe("EnterPasswordPage", () => {
     },
   };
   let store: Store<typeof storeOpts>;
+  let wrapper: Wrapper<any>;
 
   beforeEach(() => {
     // TODO: find a nicer var
@@ -45,8 +46,18 @@ describe("EnterPasswordPage", () => {
     store = new Vuex.Store(storeOpts);
   });
 
+  afterEach(() => {
+    // Some tests below mount with attachToDocument: true, which attaches
+    // (and can focus) a real element on document.body. wrapper.destroy()
+    // removes that element from the DOM as well as tearing down the Vue
+    // instance, so it must run after every test here — otherwise a leaked,
+    // focused element pollutes document.activeElement for every other test
+    // file that shares this same test page (e.g. content.test.ts).
+    wrapper.destroy();
+  });
+
   it("should apply password when button is clicked", async () => {
-    const wrapper = mount(EnterPasswordPage, { store, localVue });
+    wrapper = mount(EnterPasswordPage, { store, localVue });
 
     const passwordInput = wrapper.find("input");
     const passwordButton = wrapper.find("button");
@@ -60,7 +71,7 @@ describe("EnterPasswordPage", () => {
   });
 
   it("should apply password when enter is pressed", async () => {
-    const wrapper = mount(EnterPasswordPage, { store, localVue });
+    wrapper = mount(EnterPasswordPage, { store, localVue });
 
     const passwordInput = wrapper.find("input");
 
@@ -73,7 +84,7 @@ describe("EnterPasswordPage", () => {
   });
 
   it("should autofocus password input", () => {
-    const wrapper = mount(EnterPasswordPage, {
+    wrapper = mount(EnterPasswordPage, {
       store,
       localVue,
       attachToDocument: true,
@@ -85,7 +96,7 @@ describe("EnterPasswordPage", () => {
   });
 
   it("should not show incorrect password message", () => {
-    const wrapper = mount(EnterPasswordPage, { store, localVue });
+    wrapper = mount(EnterPasswordPage, { store, localVue });
 
     const errorText = wrapper.find("label.warning");
 
@@ -98,7 +109,7 @@ describe("EnterPasswordPage", () => {
     });
 
     it("should show incorrect password message", () => {
-      const wrapper = mount(EnterPasswordPage, { store, localVue });
+      wrapper = mount(EnterPasswordPage, { store, localVue });
 
       const errorText = wrapper.find("label.warning");
 
