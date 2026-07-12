@@ -7,7 +7,7 @@ import { expect } from "chai";
 chai.use(sinonChai);
 mocha.setup("bdd");
 
-import { applyAppendMode } from "../content";
+import { applyAppendMode, findPasteTarget } from "../content";
 
 describe("applyAppendMode (#1518)", () => {
   let input: HTMLInputElement;
@@ -42,5 +42,45 @@ describe("applyAppendMode (#1518)", () => {
     input.value = "";
     applyAppendMode(input, "654321");
     expect(input.value).to.eq("654321");
+  });
+});
+
+describe("findPasteTarget (#1423)", () => {
+  let container: HTMLDivElement;
+
+  beforeEach(() => {
+    container = document.createElement("div");
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    document.body.removeChild(container);
+  });
+
+  it("prioritizes an input whose name/id matches an OTP identity keyword over an earlier plain input", () => {
+    container.innerHTML = `
+      <input type="text" name="username" />
+      <input type="text" id="otp-code" />
+    `;
+    const target = findPasteTarget();
+    expect(target?.id).to.eq("otp-code");
+  });
+
+  it("excludes password fields from the final fallback when nothing else matches", () => {
+    container.innerHTML = `
+      <input type="password" name="pw" />
+      <input type="text" name="unrelated-visible-field" />
+    `;
+    const target = findPasteTarget();
+    expect(target?.type).to.not.eq("password");
+    expect(target?.name).to.eq("unrelated-visible-field");
+  });
+
+  it("falls back to the active element when it's a valid input and nothing else matches by identity", () => {
+    container.innerHTML = `<input type="text" name="generic" />`;
+    const activeInput = container.querySelector("input") as HTMLInputElement;
+    activeInput.focus();
+    const target = findPasteTarget();
+    expect(target).to.eq(activeInput);
   });
 });
