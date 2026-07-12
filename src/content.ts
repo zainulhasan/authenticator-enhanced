@@ -282,13 +282,16 @@ async function qrDecode(
   qr.src = url;
 }
 
+export function applyAppendMode(input: HTMLInputElement, code: string): void {
+  input.value = input.value + code;
+  fireInputEvents(input);
+}
+
 function pasteCode(code: string, mode: "replace" | "append" = "replace") {
   if (mode === "append") {
     const activeEl = document.activeElement;
     if (activeEl && activeEl.tagName === "INPUT") {
-      const inputBox = activeEl as HTMLInputElement;
-      inputBox.value = inputBox.value + code;
-      fireInputEvents(inputBox);
+      applyAppendMode(activeEl as HTMLInputElement, code);
     }
     return;
   }
@@ -358,7 +361,7 @@ function pasteCode(code: string, mode: "replace" | "append" = "replace") {
   return;
 }
 
-function fireInputEvents(inputBox: HTMLInputElement) {
+export function fireInputEvents(inputBox: HTMLInputElement) {
   const events = [
     new KeyboardEvent("keydown"),
     new KeyboardEvent("keyup"),
