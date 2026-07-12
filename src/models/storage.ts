@@ -480,6 +480,7 @@ export class EntryStorage {
         algorithm: OTPAlgorithm;
         pinned: boolean;
       } = {
+        // @ts-expect-error - it's fine if this ends up undefined
         type: OTPType[rawType] || OTPType[OTPType.totp],
         index: data[hash].index || 0,
         issuer: data[hash].issuer || "",
@@ -490,7 +491,8 @@ export class EntryStorage {
         period: data[hash].period || 30,
         digits: data[hash].digits || 6,
         algorithm: rawAlgorithm
-          ? OTPAlgorithm[rawAlgorithm]
+          ? // @ts-expect-error - it's fine if this ends up undefined
+            OTPAlgorithm[rawAlgorithm]
           : OTPAlgorithm.SHA1,
         pinned: data[hash].pinned || false,
         hash: data[hash].hash || hash,
