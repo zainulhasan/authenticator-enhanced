@@ -30,7 +30,7 @@ async function migrateLocalStorageToBrowserStorage() {
   }
 }
 
-async function init() {
+export async function init() {
   await migrateLocalStorageToBrowserStorage();
   await UserSettings.updateItems();
 
@@ -198,7 +198,14 @@ async function init() {
   );
 }
 
-init();
+init().catch((error) => {
+  console.error("Failed to initialize popup:", error);
+  const root = document.getElementById("authenticator");
+  if (root) {
+    root.textContent =
+      "Authenticator failed to load. Please try reopening the popup, or reset the extension from the options page if this persists.";
+  }
+});
 
 async function runScheduledBackup(clientTime: number, instance: Vue) {
   if (instance.$store.state.backup.dropboxToken) {
