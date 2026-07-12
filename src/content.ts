@@ -70,7 +70,7 @@ if (!document.getElementById("__ga_grayLayout__")) {
 sessionStorage.setItem("captureBoxPositionLeft", "0");
 sessionStorage.setItem("captureBoxPositionTop", "0");
 
-function showGrayLayout() {
+export function showGrayLayout() {
   let grayLayout = document.getElementById("__ga_grayLayout__");
   let qrCanvas = document.getElementById("__ga_qrCanvas__");
   if (!grayLayout) {
