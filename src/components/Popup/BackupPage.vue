@@ -81,9 +81,6 @@ export default Vue.extend({
     backupDisabled: function () {
       return this.$store.state.menu.backupDisabled;
     },
-    isDataLinkSupported: function () {
-      return !isSafari;
-    },
     isBackupServiceSupported: function () {
       return !isSafari;
     },
