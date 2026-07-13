@@ -42,6 +42,7 @@
   },
   "permissions": ["activeTab", "storage", "identity", "alarms", "scripting", "downloads"],
   "optional_permissions": ["clipboardWrite"],
+  "optional_host_permissions": ["http://*/*", "https://*/*"],
   "host_permissions": [
     "https://www.google.com/",
     "https://*.dropboxapi.com/*",

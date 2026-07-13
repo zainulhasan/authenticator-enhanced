@@ -111,7 +111,11 @@ import * as QRGen from "qrcode-generator";
 import { OTPEntry, OTPType, CodeState, OTPAlgorithm } from "../../models/otp";
 import { EntryStorage } from "../../models/storage";
 import { isFirefox, isSafari } from "../../browser";
-import { getCurrentTab, okToInjectContentScript } from "../../utils";
+import {
+  getCurrentTab,
+  okToInjectContentScript,
+  ensureContentScriptHostPermission,
+} from "../../utils";
 
 import IconMinusCircle from "../../../svg/minus-circle.svg";
 import IconRedo from "../../../svg/redo.svg";
@@ -257,14 +261,21 @@ export default Vue.extend({
             }
 
             if (this.$store.state.menu.useAutofill) {
-              await insertContentScript();
-              const tab = await getCurrentTab();
-              if (tab && tab.id) {
-                chrome.tabs.sendMessage(tab.id, {
-                  action: "pastecode",
-                  code: entry.code,
-                  mode: this.$store.state.menu.autofillMode,
-                });
+              const injected = await insertContentScript();
+              if (!injected) {
+                this.$store.dispatch(
+                  "notification/ephermalMessage",
+                  this.i18n.autofillPermissionDenied
+                );
+              } else {
+                const tab = await getCurrentTab();
+                if (tab && tab.id) {
+                  chrome.tabs.sendMessage(tab.id, {
+                    action: "pastecode",
+                    code: entry.code,
+                    mode: this.$store.state.menu.autofillMode,
+                  });
+                }
               }
             }
 
@@ -332,17 +343,25 @@ function getQrUrl(entry: OTPEntry) {
   return qr.createDataURL(5);
 }
 
-async function insertContentScript() {
+async function insertContentScript(): Promise<boolean> {
   let tab = await getCurrentTab();
-  if (okToInjectContentScript(tab)) {
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ["/dist/content.js"],
-    });
-    await chrome.scripting.insertCSS({
-      target: { tabId: tab.id },
-      files: ["/css/content.css"],
-    });
+  if (!(await ensureContentScriptHostPermission(tab))) {
+    return false;
   }
+  // ensureContentScriptHostPermission() only returns true after confirming
+  // okToInjectContentScript(tab), but that doesn't narrow `tab`'s type across
+  // the async call boundary, so re-check here purely for the type guard.
+  if (!okToInjectContentScript(tab)) {
+    return false;
+  }
+  await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    files: ["/dist/content.js"],
+  });
+  await chrome.scripting.insertCSS({
+    target: { tabId: tab.id },
+    files: ["/css/content.css"],
+  });
+  return true;
 }
 </script>

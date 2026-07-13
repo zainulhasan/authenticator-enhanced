@@ -165,3 +165,19 @@ export function okToInjectContentScript(
       tab.url.startsWith("file://"))
   );
 }
+
+export async function ensureContentScriptHostPermission(
+  tab: chrome.tabs.Tab
+): Promise<boolean> {
+  if (!okToInjectContentScript(tab)) {
+    return false;
+  }
+  const origin = new URL(tab.url).origin + "/*";
+  const hasPermission = await chrome.permissions.contains({
+    origins: [origin],
+  });
+  if (hasPermission) {
+    return true;
+  }
+  return chrome.permissions.request({ origins: [origin] });
+}
