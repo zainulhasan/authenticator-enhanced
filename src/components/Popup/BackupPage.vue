@@ -14,41 +14,23 @@
       <div class="text warning" v-if="currentlyEncrypted">
         {{ i18n.phrase_incorrect_export }}
       </div>
-      <a-button-link
-        download="authenticator.txt"
-        :href="exportOneLineOtpAuthFile"
-        v-if="!unsupportedAccounts && isDataLinkSupported"
-        >{{ i18n.download_backup }}</a-button-link
-      >
       <button
         v-on:click="downloadBackUpOneLineOtpAuthFile()"
-        v-if="!unsupportedAccounts && !isDataLinkSupported"
+        v-if="!unsupportedAccounts"
         class="button"
       >
         {{ i18n.download_backup }}
       </button>
-      <a-button-link
-        download="authenticator.json"
-        :href="exportFile"
-        v-if="unsupportedAccounts && isDataLinkSupported"
-        >{{ i18n.download_backup }}</a-button-link
-      >
       <button
         v-on:click="downloadBackUpExportFile()"
-        v-if="unsupportedAccounts && !isDataLinkSupported"
+        v-if="unsupportedAccounts"
         class="button"
       >
         {{ i18n.download_backup }}
       </button>
-      <a-button-link
-        download="authenticator.json"
-        :href="exportEncryptedFile"
-        v-if="!!defaultEncryption && isDataLinkSupported"
-        >{{ i18n.download_enc_backup }}</a-button-link
-      >
       <button
         v-on:click="downloadBackUpExportEncryptedFile()"
-        v-if="!!defaultEncryption && !isDataLinkSupported"
+        v-if="!!defaultEncryption"
         class="button"
       >
         {{ i18n.download_enc_backup }}
@@ -71,6 +53,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { isSafari } from "../../browser";
+import { downloadOrOpen } from "../../models/downloadOrOpen";
 
 export default Vue.extend({
   data: function () {
@@ -157,18 +140,18 @@ export default Vue.extend({
     downloadBackUpOneLineOtpAuthFile() {
       const exportData = this.$store.state.accounts.exportData;
       const t = getOneLineOtpBackupFile(exportData);
-      window.open(t);
+      downloadOrOpen(t, "authenticator.txt");
     },
     downloadBackUpExportFile() {
       const exportData = this.$store.state.accounts.exportData;
       const t = getBackupFile(exportData);
-      window.open(t);
+      downloadOrOpen(t, "authenticator.json");
     },
     downloadBackUpExportEncryptedFile() {
       const exportEncData = this.$store.state.accounts.exportEncData;
       const key = this.$store.state.accounts.key;
       const t = getBackupFile(exportEncData, key);
-      window.open(t);
+      downloadOrOpen(t, "authenticator.json");
     },
   },
 });
