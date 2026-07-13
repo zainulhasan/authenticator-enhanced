@@ -99,7 +99,7 @@ export function getMatchedEntriesHash(
   return false;
 }
 
-function isMatchedEntry(
+export function isMatchedEntry(
   siteName: Array<string | null>,
   entry: OTPEntryInterface
 ) {
@@ -119,7 +119,12 @@ function isMatchedEntry(
   const siteHost = siteName[2] || "";
 
   if (issuerHostMatches.length > 1) {
-    if (siteHost && siteHost.indexOf(issuerHostMatches[1]) !== -1) {
+    const issuerHost = issuerHostMatches[1].trim().toLowerCase();
+    if (
+      siteHost &&
+      issuerHost &&
+      (siteHost === issuerHost || siteHost.endsWith("." + issuerHost))
+    ) {
       return true;
     }
   }
