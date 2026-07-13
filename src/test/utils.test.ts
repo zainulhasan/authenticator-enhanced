@@ -1,5 +1,4 @@
 import "mocha";
-import * as chai from "chai";
 import { expect } from "chai";
 
 mocha.setup("bdd");
